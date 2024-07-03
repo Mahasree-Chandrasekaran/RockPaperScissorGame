@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('RR1.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7); /* Lightens the background image */
+            z-index: 0;
+        }
+
+        header, .scoreboard, button, .reset-button {
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        button {
+            background-color: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 15px 32px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background-color: rgba(69, 160, 73, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .scoreboard {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .result, .moves {
+            margin: 20px 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .reset-button {
+            background-color: rgba(244, 67, 54, 0.9);
+            margin-top: 20px;
+        }
+
+        .reset-button:hover {
+            background-color: rgba(211, 47, 47, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Rock Paper Scissors</h1>
+    </header>
+    <div>
+        <button onclick="playGame('Rock')">Rock</button>
+        <button onclick="playGame('Paper')">Paper</button>
+        <button onclick="playGame('Scissors')">Scissors</button>
+    </div>
+    <div class="scoreboard">
+        <p class="js-updateScore"></p>
+        <p class="js-result result"></p>
+        <p class="js-moves moves"></p>
+    </div>
+    <button class="reset-button" onclick="
+        score.Losses=0;
+        score.Wins=0;
+        score.Ties=0;
+        localStorage.removeItem('score');
+        updateScore();
+    ">
+        Reset Score
+    </button>
+    <script>
+        let score = JSON.parse(localStorage.getItem('score')) || { Wins: 0, Losses: 0, Ties: 0 };
+        updateScore();
+
+        function playGame(PlayerMove) {
+            const ComputerMove = pickComputerMove();
+            let result = '';
+
+            if (PlayerMove === 'Rock') {
+                result = ComputerMove === 'Rock' ? 'The match is TIE..' :
+                         ComputerMove === 'Paper' ? 'YOU LOSE..' : 'YOU WON..!!';
+            } else if (PlayerMove === 'Paper') {
+                result = ComputerMove === 'Rock' ? 'YOU WON..!!' :
+                         ComputerMove === 'Paper' ? 'The match is TIE..' : 'YOU LOSE..';
+            } else if (PlayerMove === 'Scissors') {
+                result = ComputerMove === 'Rock' ? 'YOU LOSE..' :
+                         ComputerMove === 'Paper' ? 'YOU WON..!!' : 'The match is TIE..';
+            }
+
+            if (result === 'YOU WON..!!') {
+                score.Wins++;
+            } else if (result === 'YOU LOSE..') {
+                score.Losses++;
+            } else if (result === 'The match is TIE..') {
+                score.Ties++;
+            }
+
+            localStorage.setItem('score', JSON.stringify(score));
+            updateScore();
+            document.querySelector('.js-result').innerHTML = result;
+            document.querySelector('.js-moves').innerHTML = `You picked ${PlayerMove} - Computer picked ${ComputerMove}.`;
+
+            alert(`You picked ${PlayerMove}. The Computer picked ${ComputerMove}. ${result}.
+Wins = ${score.Wins}, Losses = ${score.Losses}, Ties = ${score.Ties}`);
+        }
+
+        function updateScore() {
+            document.querySelector('.js-updateScore').innerHTML = `Wins = ${score.Wins}, Losses = ${score.Losses}, Ties = ${score.Ties}`;
+        }
+
+        function pickComputerMove() {
+            const ranNum = Math.random();
+            return ranNum < 1 / 3 ? 'Rock' : ranNum < 2 / 3 ? 'Paper' : 'Scissors';
+        }
+    </script>
+</body>
+</html>
